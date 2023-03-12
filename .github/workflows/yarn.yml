@@ -33,7 +33,7 @@ jobs:
 
       # React Build
       - name: Build
-        run: yarn build
+        run: cd client && yarn build
         env:
           CI: ""
 
