@@ -18,7 +18,7 @@ on:
 env:
   AWS_REGION: ap-northeast-2
   S3_BUCKET_NAME: hp5234-dragonmoney
-  S3_SERVER_PROJECT_FILE_NAME: practice-deploy.zip
+  S3_SERVER_PROJECT_FILE_NAME: practice-be-deploy.zip
   CODE_DEPLOY_APPLICATION_NAME: dragonmoney-app
   CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: dragonmoney-codedeploy-deployment-group
 
