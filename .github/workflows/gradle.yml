@@ -18,6 +18,7 @@ on:
 env:
   AWS_REGION: ap-northeast-2
   S3_BUCKET_NAME: hp5234-dragonmoney
+  S3_SERVER_PROJECT_FILE_NAME: practice-deploy.zip
   CODE_DEPLOY_APPLICATION_NAME: dragonmoney-app
   CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: dragonmoney-codedeploy-deployment-group
 
@@ -36,16 +37,19 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
+        
+    - name: Deploy Server
+      run: cd server && ./gradlew build && echo "Deploy server to production"
 
-    # 그래들 권한 부여 
-    - name: Add permission
-      run: chmod +x gradlew
+#     # 그래들 권한 부여 
+#     - name: Add permission
+#       run: chmod +x gradlew
     
-    # 빌드작업 
-    - name: Build with Gradle
-      uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
-      with:
-        arguments: build
+#     # 빌드작업 
+#     - name: Build with Gradle
+#       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+#       with:
+#         arguments: build
     
     # build한 후 프로젝트를 압축
     - name: Make zip file
@@ -60,24 +64,26 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # 등록한 Github Secret이 자동으로 불려옵니다.
         aws-region: ${{ env.AWS_REGION }}
         
-    # 압축한 프로젝트를 S3로 전송합니다.
-    - name: Upload to S3
-      run: aws s3 cp --region ap-northeast-2 ./practice-deploy.zip s3://$S3_BUCKET_NAME/practice-deploy.zip
+#     # 압축한 프로젝트를 S3로 전송합니다.
+#     - name: Upload to S3
+#       run: aws s3 cp --region ap-northeast-2 ./practice-deploy.zip s3://$S3_BUCKET_NAME/$S3_SERVER_PROJECT_FILE_NAME
       
-#     # 빌드 결과물을 S3 버킷에 업로드
-#     - name: Upload to AWS S3
-#       run: |
-#         aws deploy push \
-#           --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
-#           --ignore-hidden-files \
-#           --s3-location s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip \
-#           --source .
+    # 빌드 결과물을 S3 버킷에 업로드
+    # --s3-location s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip \
 
-#     # (6) S3 버킷에 있는 파일을 대상으로 CodeDeploy 실행
-#     - name: Deploy to AWS EC2 from S3
-#       run: |
-#         aws deploy create-deployment \
-#           --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
-#           --deployment-config-name CodeDeployDefault.AllAtOnce \
-#           --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
-#           --s3-location bucket=$S3_BUCKET_NAME,key=$GITHUB_SHA.zip,bundleType=zip
+    - name: Upload to AWS S3
+      run: |
+        aws deploy push \
+          --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
+          --ignore-hidden-files \
+          --s3-location s3://$S3_BUCKET_NAME/$S3_SERVER_PROJECT_FILE_NAME \
+          --source .
+
+    # (6) S3 버킷에 있는 파일을 대상으로 CodeDeploy 실행
+    - name: Deploy to AWS EC2 from S3
+      run: |
+        aws deploy create-deployment \
+          --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
+          --deployment-config-name CodeDeployDefault.AllAtOnce \
+          --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
+          --s3-location bucket=$S3_BUCKET_NAME,key=$S3_SERVER_PROJECT_FILE_NAME,bundleType=zip
