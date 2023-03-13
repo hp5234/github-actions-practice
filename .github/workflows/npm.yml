@@ -48,6 +48,7 @@ jobs:
       - name: Upload to AWS S3
         run: |
           aws s3 cp \
+            --debug
             --recursive \
             --region ${{ env.AWS_REGION }}
             /client/build s3://${{ env.S3_BUCKET_NAME }}
