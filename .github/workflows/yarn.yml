@@ -39,7 +39,7 @@ jobs:
 
       # build 한 후 프로젝트를 압축
       - name: zip create
-        run: zip -r ./S3_SERVER_PROJECT_FILE_NAME .
+        run: zip -r ./$S3_SERVER_PROJECT_FILE_NAME .
         shell: bash
 
       # Access Key와 Secret Access Key를 통해 권한을 확인합니다.

@@ -38,16 +38,30 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
 
+    ## create properties file
+    - name: make application-local.yml
+      if: contains(github.ref, 'be-dev') # branch 가 be-dev 인 경우
+      run: |
+        # spring의 resources 경로로 이동
+        cd ./server/src/main/resources 
+        
+        # application-dev.properties 파일 생성
+        touch ./application-local.yml 
+        
+        # GitHub-Actions 에서 설정한 값으로 값 지정
+        echo "${{ secrets.APPLICATION_LOCAL }}" > ./application-local.yml
+      shell: bash
+
     # 서버 빌드 수행
-    - name: Deploy Server
-      run: cd server && ./gradlew build && echo "Deploy server to production"
+    - name: Build with Gradle
+      run: cd server && ./gradlew build
     
     # build 한 후 프로젝트를 압축
     - name: Make zip file
       run: zip -r ./$S3_SERVER_PROJECT_FILE_NAME server/build/libs/*.jar
       shell: bash
     
-    # Access Key와 Secret Access Key를 통해 권한을 확인합니다.
+    # Access Ke y와 Secret Access Key 를 통해 권한을 확인합니다.
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
