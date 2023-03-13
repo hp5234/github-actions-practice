@@ -10,8 +10,8 @@ name: Java CI with Gradle
 on:
   push:
     branches: [ "be-dev" ]
-#  pull_request:
-#    branches: [ "main" ]
+  pull_request:
+    branches: [ "be-dev" ]
 
 # 환경변수 정의 
 # 리전, 버킷 이름, CodeDeploy 앱 이름, CodeDeploy 배포 그룹 이름
