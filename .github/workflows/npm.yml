@@ -31,11 +31,11 @@ jobs:
 
       # 의존 파일 설치
       - name: Install Dependencies
-        run: cd client && npm install --frozen-lockfile
+        run: cd client && npm install
 
       # React Build
       - name: Build
-        run: cd client && npm start build
+        run: cd client && npm run build
         env:
           CI: ""
 
