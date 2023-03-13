@@ -58,4 +58,4 @@ jobs:
           aws s3 cp \
             --recursive \
             --region $AWS_REGION
-            client/build s3://$S3_BUCKET_NAME
+            client/build s3://${{ env.S3_BUCKET_NAME }}
