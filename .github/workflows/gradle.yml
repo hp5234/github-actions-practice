@@ -58,7 +58,7 @@ jobs:
     
     # build 한 후 프로젝트를 압축
     - name: Make zip file
-      run: zip -r ./$S3_SERVER_PROJECT_FILE_NAME server/build/libs/*.jar
+      run: cd server/build/libs && zip -r ./$S3_SERVER_PROJECT_FILE_NAME *.jar
       shell: bash
     
     # Access Ke y와 Secret Access Key 를 통해 권한을 확인합니다.
@@ -72,11 +72,11 @@ jobs:
     # 빌드 결과물을 S3 버킷에 업로드
     - name: Upload to AWS S3
       run: |
-        aws deploy push \
+        aws s3 cp
           --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
           --ignore-hidden-files \
           --s3-location s3://$S3_BUCKET_NAME/$S3_SERVER_PROJECT_FILE_NAME \
-          --source .
+          --source server/build/libs/$S3_SERVER_PROJECT_FILE_NAME
 
     # S3 버킷에 있는 파일을 대상으로 CodeDeploy 실행
     - name: Deploy to AWS EC2 from S3
